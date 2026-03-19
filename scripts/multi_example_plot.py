@@ -32,13 +32,12 @@ ax.set_xscale("log")
 ax.set_xlabel(r"Number of data points $t$")
 # ax.set_ylabel(r"Prediction error")
 
-ax.plot(t_axis, max_b_p_truth, "-.", label="l.h.s. in param. id.", linewidth=2, color="C1")
-ax.plot(t_axis, max_b_p, label="r.h.s. in param. id.", linewidth=2, color="C1")
-
-ax.plot(t_axis, max_b_LTI_truth, "--", label="l.h.s. in LTI id.", linewidth=2, color="red")
-ax.plot(t_axis, max_b_LTI, label="r.h.s. in LTI id. (Fr.)", linewidth=1, color="purple")
 ax.plot(t_axis, max_b_LTI_op, ":", label="r.h.s. in LTI id. (op.)", linewidth=2, color="purple")
+ax.plot(t_axis, max_b_LTI, "--", label="r.h.s. in LTI id. (Fr.)", linewidth=1, color="purple")
+ax.plot(t_axis, max_b_LTI_truth, "-", label="l.h.s. in LTI id.", linewidth=2, color="purple")
 
+ax.plot(t_axis, max_b_p, "-.", label="r.h.s. in param. id.", linewidth=2, color="C1")
+ax.plot(t_axis, max_b_p_truth, "-", label="l.h.s. in param. id.", linewidth=2, color="C1")
 
 ax.set_ylim(top=5000)
 # ax.set_xlim(0, tmax)
