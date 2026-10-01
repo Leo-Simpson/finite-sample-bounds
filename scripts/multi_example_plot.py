@@ -39,7 +39,7 @@ ax.plot(t_axis, max_b_LTI_truth, "-", label="l.h.s. in LTI id.", linewidth=2, co
 ax.plot(t_axis, max_b_p, "-.", label="r.h.s. in param. id.", linewidth=2, color="C1")
 ax.plot(t_axis, max_b_p_truth, "-", label="l.h.s. in param. id.", linewidth=2, color="C1")
 
-ax.set_ylim(top=5000)
+ax.set_ylim(top=6000)
 # ax.set_xlim(0, tmax)
 
 fig.subplots_adjust(right=0.61, top=1) # make space for the legend

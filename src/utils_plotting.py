@@ -36,7 +36,6 @@ def save_and_show(fig, filename):
     plt.pause(0.1)
 
 
-
 """
     This part is for creating specific matplotlib handles for legends of shaded regions.
 """
@@ -48,10 +47,14 @@ from matplotlib.legend import Legend
 from matplotlib.legend_handler import HandlerBase
 import matplotlib.colors as mcolors
 
-class MyPatch(Artist):
-    def __init__(self, type_of_region="ouptut_constraints"):
-        super().__init__()
+class MyPatch(Rectangle):
+    def __init__(self, color="C0", linestyle="-", type_of_region="ouptut_constraints"):
+        self.color = color
+        self.linestyle = linestyle
         self.type_of_region = type_of_region
+
+        
+        super().__init__( xy=(0, 0), width=0, height=0, visible=False) # Dummy/invisible geometry if this object is mainly  being used as a semantic handle.
 
 class MyHandler(HandlerBase):
     def create_artists( self, legend, patch, x_left, y_bottom, width, height, fontsize, trans):
@@ -59,19 +62,19 @@ class MyHandler(HandlerBase):
         y_top = y_bottom + height
         symbols: list[Artist] = []
         if patch.type_of_region == "ouptut_constraints":
-            facecolor = mcolors.to_rgba("C1", 0.25)
-            edgecolor = mcolors.to_rgba("C1", 1)
+            facecolor = mcolors.to_rgba(patch.color, 0.25)
+            edgecolor = mcolors.to_rgba(patch.color, 1)
             symbols.append(
-                Line2D( [x_left, x_right], [y_top, y_top], color=edgecolor, linewidth=1, transform=trans, solid_capstyle="butt")
+                Line2D( [x_left, x_right], [y_top, y_top], color=edgecolor, linewidth=1, linestyle=patch.linestyle, transform=trans, solid_capstyle="butt")
             )
             symbols.append(
-                Line2D( [x_left, x_right], [y_bottom, y_bottom], color=edgecolor, linewidth=1, transform=trans, solid_capstyle="butt")
+                Line2D( [x_left, x_right], [y_bottom, y_bottom], color=edgecolor, linewidth=1, linestyle=patch.linestyle, transform=trans, solid_capstyle="butt")
             )
         elif patch.type_of_region == "forbidden_region":
-            facecolor = mcolors.to_rgba("red", 0.2)
-            edgecolor = mcolors.to_rgba("red", 0.8)
+            facecolor = mcolors.to_rgba(patch.color, 0.2)
+            edgecolor = mcolors.to_rgba(patch.color, 0.8)
             symbols.append(
-                Line2D( [x_right, x_right], [y_bottom, y_top], color=edgecolor, linewidth=1, transform=trans, solid_capstyle="butt")
+                Line2D( [x_right, x_right], [y_bottom, y_top], color=edgecolor, linewidth=1, linestyle=patch.linestyle, transform=trans, solid_capstyle="butt")
             )
 
         symbols.append(

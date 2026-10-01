@@ -25,7 +25,7 @@ ntheta = 2
 
 temp_ext = 25
 temp_init = 20
-temp_max = 100
+temp_in = 100
 
 tmax = 2000
 delta = 0.05
@@ -34,7 +34,7 @@ cw = 1  / np.sqrt(3) # subgaussian proxy constant for uniform noise in [-temp_ma
 rng = np.random.default_rng(0)
 
 # generate identification trajectory
-temp0 = temp_max * (1 + np.sin(0.1 * np.arange(tmax)))
+temp0 = temp_in * (1 + np.sin(0.1 * np.arange(tmax)))
 us = np.array([temp0, temp_ext * np.ones(tmax)]).T
 
 ws = rng.uniform(-1, 1, size=(tmax, nx))
@@ -45,8 +45,9 @@ Ms = build_parametric_regressors(us, xs) # Create the data for parametric identi
 
 
 # Create test trajectory
+print("Generating test trajectory...")
 n_grid = 1000 # for clean: 1000, for fast: 20
-temp_grid = rng.uniform(0, temp_max, size=(n_grid, nx+2))
+temp_grid = rng.uniform(0, 2*temp_in, size=(n_grid, nx+2))
 us_grid = temp_grid[:-1, :2]
 xs_grid = temp_grid[:, 2:]
 
@@ -56,7 +57,7 @@ g_stars = alpha * Ms_grid[..., 0] + beta * Ms_grid[..., 1]
 
 
 # Make parametric estimates and bounds
-Vbar = np.eye(ntheta) * temp_max**2
+Vbar = np.eye(ntheta) * temp_in**2
 ctheta = 0. # OLS
 g_hats_p, bs_p = RLS_output_bounds(Ms, ys, Ms_grid, Vbar, ctheta, cw, delta, method="noprior")
 print("Parametric bounds compute!")
@@ -66,7 +67,7 @@ max_b_p_truth = bs_p_truth.max(axis=0) # worst-case error accross test trajector
 
 
 # Make LTI estimates and bounds
-PHIbar = np.eye(nx+2) * temp_max**2
+PHIbar = np.eye(nx+2) * temp_in**2
 g_hats_LTI, bs_LTI = OLS_output_bounds(phis, ys, phis_grid, PHIbar, cw, delta, method="Frobenius")
 print("Non-parametric bounds compute!")
 

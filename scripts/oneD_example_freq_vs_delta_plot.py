@@ -12,6 +12,7 @@ main_dir = dirname(dirname(__file__))
 src_dir = join(main_dir, 'src')
 sys.path.append(src_dir)
 from utils_plotting import latexify, save_and_show
+from oneD_example_utils import color_ours, color_others, linestyle_ours, linestyle_others
 latexify()
 
 file_saving = join(main_dir, "pickles", "oneD_example_violations.pkl")
@@ -29,8 +30,8 @@ ax.set_ylabel(r"violation frequency")
 ax.set_xscale("log")
 ax.set_yscale("log")
 ax.plot(deltas, deltas, linestyle="--", label=r"$\delta$", color="C0")
-ax.plot(deltas, freq_ours, marker=".", linestyle="-", label= "Novel bound", color="C1")
-ax.plot(deltas, freq_tri, marker=".", linestyle=":", label="Existing bound", color="purple")
+ax.plot(deltas, freq_ours, marker=".", linestyle=linestyle_ours, label= "Novel bound", color=color_ours)
+ax.plot(deltas, freq_tri, marker=".", linestyle=linestyle_others, label="Existing bound", color=color_others)
 
 
 fig.subplots_adjust(right=0.69, top=1) # make space for the legend

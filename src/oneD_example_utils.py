@@ -6,6 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from utils_maths import w_norm
+from utils_plotting import MyPatch
 
 # Parameters of the problem
 params = {
@@ -80,9 +81,15 @@ def simulate(rng,  tmax, noise_distribution="gaussian"):
 
 # Utilities functions for plotting
 color_star = "C0"
-color_hat = "C1"
+color_hat = "C3"
+color_ours = "C1"
+color_others = "purple"
 
-def plot_learning_on_ax(ax, us, ys, u_grid, g_star, g_hat, b, umax=None):
+linestyle_ours = "-"
+linestyle_others = ":"
+
+
+def plot_learning_on_ax(ax, us, ys, u_grid, g_star, g_hat, b_ours, b_others=None, umax=None):
     """
          Plot the learned function and the confidence bounds
     """
@@ -94,25 +101,42 @@ def plot_learning_on_ax(ax, us, ys, u_grid, g_star, g_hat, b, umax=None):
 
     ax.plot(u_grid, g_hat, linewidth=2, linestyle="--", color=color_hat, label=r"$g(u_k; \hat{\theta}_t)$")
 
-
-    ax.plot(u_grid, g_hat+b, linewidth=1, linestyle="-", color=color_hat)
-    ax.plot(u_grid, g_hat-b, linewidth=1, linestyle="-", color=color_hat)
-    ax.fill_between(u_grid, g_hat-b, g_hat+b, alpha=0.25, color=color_hat)
+    if b_others is not None:
+        ax.plot(u_grid, g_hat+b_others, linewidth=1, linestyle=linestyle_others, color=color_others)
+        ax.plot(u_grid, g_hat-b_others, linewidth=1, linestyle=linestyle_others, color=color_others)
+        ax.fill_between(u_grid, g_hat-b_others, g_hat+b_others, alpha=0.08, color=color_others)
     
+    ax.plot(u_grid, g_hat+b_ours, linewidth=1, linestyle=linestyle_ours, color=color_ours)
+    ax.plot(u_grid, g_hat-b_ours, linewidth=1, linestyle=linestyle_ours, color=color_ours)
+    ax.fill_between(u_grid, g_hat-b_ours, g_hat+b_ours, alpha=0.25, color=color_ours)
 
-def plot_many_learning_on_ax(ax, u_grid, g_star, lower_bounds, upper_bounds):
+
+    patch_ours = MyPatch(color=color_ours, linestyle=linestyle_ours)
+    patch_ours.set_label(r"$g(u; \hat{\theta}_t) \pm \beta_t \sigma_t(u)$")
+    ax.add_patch(patch_ours)
+
+    if b_others is not None:
+        patch_others = MyPatch(color=color_others, linestyle=linestyle_others)
+        patch_others.set_label(r"$g(u; \hat{\theta}_t) \pm \tilde{\beta_t} \sigma_t(u)$")
+        ax.add_patch(patch_others)
+
+def plot_many_learning_on_ax(ax, u_grid, g_star, lb_ours, ub_ours, lb_others=None, ub_others=None):
     """
             Plot many learned functions and confidence bounds overlayed (e.g. for multiple runs)
     """
     ax.set_xlabel(r"$u_k$")
     ax.set_xlim(u_grid.min(), u_grid.max())
 
-    for i in range(len(lower_bounds)):
-        ax.plot(u_grid, lower_bounds[i], alpha=0.3, color=color_hat)
-        ax.plot(u_grid, upper_bounds[i], alpha=0.3, color=color_hat)
-        ax.fill_between(u_grid, lower_bounds[i], upper_bounds[i], alpha=0.01, color=color_hat)
+    for i in range(len(lb_ours)):
+        if lb_others is not None and ub_others is not None:
+            ax.plot(u_grid, lb_others[i], alpha=0.2, linestyle=linestyle_others, color=color_others)
+            ax.plot(u_grid, ub_others[i], alpha=0.2, linestyle=linestyle_others, color=color_others)
+            ax.fill_between(u_grid, lb_others[i], ub_others[i], alpha=0.002, color=color_others)
+        ax.plot(u_grid, lb_ours[i], alpha=0.3, linestyle=linestyle_ours, color=color_ours)
+        ax.plot(u_grid, ub_ours[i], alpha=0.3, linestyle=linestyle_ours, color=color_ours)
+        ax.fill_between(u_grid, lb_ours[i], ub_ours[i], alpha=0.01, color=color_ours)
     ax.plot(u_grid, g_star, color=color_star, linestyle="-.", linewidth=2) # plot true once
-    
+
 
 def plot_trajectory(xs, xr, us, u_max):
     fig, axs = plt.subplots(2, figsize=(8,6))
@@ -127,3 +151,4 @@ def plot_trajectory(xs, xr, us, u_max):
         ax.set_xlabel(r"$t$")
         ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     return fig
+
